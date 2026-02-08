@@ -2,24 +2,23 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --release
-    - name: Archive artifacts
-      run: |
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --release
+      - name: Archive artifacts
+        run: |
           mkdir -p build
           copy target\release\dir-summary.* build\
            powershell Compress-Archive -Path build\* -DestinationPath build\artifacts.zip
@@ -29,14 +28,15 @@ jobs:
     needs: build
     steps:
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4 # Updated to version v4
         with:
           name: artifacts
           path: build/artifacts.zip
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}  # Release tag from the current ref
+          tag_name: ${{ github.ref }} # Release tag from the current ref
           files: build/artifacts.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
