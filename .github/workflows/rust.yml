@@ -45,10 +45,18 @@ jobs:
         run: |
           ls -R
 
+      - name: Get Current Date
+        id: get_date
+        run: |
+          TAG_NAME=$(date "+%Y.%m.%d.%H.%M.%S")
+          echo "New tag name will be: $TAG_NAME"
+          echo "::set-output name=tag_name::$TAG_NAME"
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }} # Release tag from the current ref
+          tag_name: ${{ steps.get_datetime.outputs.tag_name }}
+          release_name: "Release ${{ steps.get_datetime.outputs.tag_name }}"
           files: artifacts.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
