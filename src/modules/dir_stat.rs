@@ -36,6 +36,9 @@ pub fn create_report(target_dir: &str, report_path: &PathBuf) -> Result<()> {
     let mut wtr = Writer::from_path(report_path).context("Failed to create CSV writer")?;
     wtr.write_record(&["Filename", "Size (bytes)","Size"])
         .context("Failed to write header to CSV")?;
+    // wtr.write_record(&[target_dir,"",""])?;
+    // wtr.flush()?;
+   let target_dir=path::absolute(target_dir)?;
     for entry in WalkDir::new(target_dir).into_iter().filter_map(Result::ok) {
         if entry.file_type().is_file() {
             let file_name = path::absolute(entry.path())?.to_string_lossy().to_string();
