@@ -55,15 +55,15 @@ jobs:
         run: |
           TAG_NAME=$(date "+%Y.%m.%d.%H.%M.%S")
           echo "New tag name will be: $TAG_NAME"
-          echo "::set-output name=tag_name::$TAG_NAME"
+          run: echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.get_date.outputs.tag_name }}
+          tag_name: $TAG_NAME
           files: |
-            artifacts.zip
-            dll-artifacts.zip
+            ./build/artifacts.zip
+            ./build-dll/dll-artifacts.zip
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
