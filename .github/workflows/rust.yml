@@ -22,7 +22,7 @@ jobs:
           mkdir -p build
           mkdir -p build-dll
           copy target\release\dir-summary* build\
-          copy target\release\dirSummary* build-sll\ 
+          copy target\release\dirSummary* build-dll\ 
           powershell Compress-Archive -Path build\* -DestinationPath build\artifacts.zip
           powershell Compress-Archive -Path build-dll\* -DestinationPath build-dll\dll-artifacts.zip
       - name: List build directory
