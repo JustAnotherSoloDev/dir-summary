@@ -20,8 +20,11 @@ jobs:
       - name: Archive artifacts
         run: |
           mkdir -p build
-          copy target\release\dir-summary.* build\
-           powershell Compress-Archive -Path build\* -DestinationPath build\artifacts.zip
+          mkdir -p build-dll
+          copy target\release\dir-summary* build\
+          copy target\release\dirSummary* build-sll\ 
+          powershell Compress-Archive -Path build\* -DestinationPath build\artifacts.zip
+          powershell Compress-Archive -Path build-dll\* -DestinationPath build-dll\dll-artifacts.zip
       - name: List build directory
         run: |
           dir build
@@ -30,7 +33,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifacts
-          path: build\artifacts.zip
+          path: |
+            build\artifacts.zip
+            build-dll\dll-artifacts.zip
 
   release:
     runs-on: ubuntu-latest
@@ -56,6 +61,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.get_date.outputs.tag_name }}
-          files: artifacts.zip
+          files: |
+            artifacts.zip
+            dll-artifacts.zip
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
