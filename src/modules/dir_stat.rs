@@ -100,7 +100,7 @@ pub fn summary(report_path: &PathBuf) -> Result<String> {
         .from_path(report_path)?;
 
     // Create a HashMap to store directory sizes
-    let mut dir_sizes: HashMap<String, u64> = HashMap::new();
+    let mut dir_sizes: HashMap<String, (u64,u64)> = HashMap::new();
 
     // Read the CSV file
     for result in rdr.records() {
@@ -113,7 +113,10 @@ pub fn summary(report_path: &PathBuf) -> Result<String> {
                 let dir_path = parent_dir.to_string_lossy().to_string();
 
                 // Sum the size in the corresponding directory
-                *dir_sizes.entry(dir_path).or_insert(0) += size;
+                let entry=*dir_sizes.entry(dir_path.clone()).or_insert((0,0));
+                let new_size=entry.0+size;
+                let new_total=entry.1+1;
+                dir_sizes.insert(dir_path,(new_size,new_total));
             }
     }
     let summary_report=get_report_name("summary")?;
@@ -123,12 +126,14 @@ pub fn summary(report_path: &PathBuf) -> Result<String> {
         .from_path(&summary_report)?;
     
     // Write the header
-    wtr.write_record(&["Directory", "Size in Bytes","Total Size"])?;
+    wtr.write_record(&["Directory", "Size in Bytes","Total Size","Total Files"])?;
 
     // Write the total size of each directory into the output CSV
-    for (dir, size) in dir_sizes {
+    for (dir, details) in dir_sizes {
+        let size=details.0;
+        let total_files=details.1;
         let readable_size=bytesize::ByteSize(size);
-        wtr.write_record(&[dir, size.to_string(),readable_size.to_string()])?;
+        wtr.write_record(&[dir, size.to_string(),readable_size.to_string(),total_files.to_string()])?;
     }
 
     // Flush the writer
