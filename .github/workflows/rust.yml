@@ -60,7 +60,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: $TAG_NAME
+          tag_name: ${{env.TAG_NAME}}
           files: |
             ./build/artifacts.zip
             ./build-dll/dll-artifacts.zip
